@@ -1,7 +1,7 @@
 if [ "$1" = "clean" ]
 then
 	mvn clean && rm -rf target
-elif [ ! -d "target" ]
+elif [ ! -f "target/classes/leng1/Computadora.class" ]
 then
 	mvn clean package &&
 	java -cp target/classes leng1.Computadora
