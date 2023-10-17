@@ -26,11 +26,6 @@ public class Computadora {
 
             switch(comando) {
                 case "DEFINIR":
-                    if (accion.length < 2) {
-                        System.out.println("No se especifico el tipo a definir");
-                        continue;
-                    }
-                    
                     definir(accion);
                     break;
                 case "EJECUTABLE":
@@ -52,55 +47,48 @@ public class Computadora {
         }
     }
 
-    public void definir(String[] accion) {
+    public String definir(String[] accion) {
+        if (accion.length < 2) return "No se especifico el tipo a definir";
+
         String tipo = accion[1].toUpperCase();
         String nombre, lenguaje, base, origen, destino;
+
         switch(tipo) {
             case "PROGRAMA":
                 if (accion.length < 4) {
-                    System.out.println("No se especifico el nombre del programa o el lenguaje");
-                    System.out.println("USO: DEFINIR PROGRAMA <nombre> <lenguaje>");
-                    return;
+                    return "No se especifico el nombre del programa o el lenguaje\nUSO: DEFINIR PROGRAMA <nombre> <lenguaje>";
                 }
 
                 nombre = accion[2];
                 lenguaje = accion[3];
 
                 if (programas.containsKey(nombre)) {
-                    System.out.println("Ya existe un programa con ese nombre");
-                    return;
+                    return "Ya existe un programa con ese nombre";
                 }
 
                 programas.put(nombre, new Programa(nombre, lenguaje));
 
-                System.out.println(String.format("Se definio el programa '%s', ejecutable en '%s'", nombre, lenguaje));
-                break;
+                return String.format("Se definio el programa '%s', ejecutable en '%s'", nombre, lenguaje);
 
             case "INTERPRETE":
                 if (accion.length < 4) {
-                    System.out.println("No se especifico el lenguaje base o el lenguaje");
-                    System.out.println("USO: DEFINIR INTERPRETE <lenguaje base> <lenguaje>");
-                    return;
+                    return "No se especifico el lenguaje base o el lenguaje\nUSO: DEFINIR INTERPRETE <lenguaje base> <lenguaje>";
                 }
 
                 base = accion[2];
                 lenguaje = accion[3];
 
                 if (interpretes.containsKey(String.format("%s en %s", lenguaje, base))) {
-                    System.out.println("Ya existe un interprete para ese lenguaje escrito en ese lenguaje base");
-                    return;
+                    return "Ya existe un interprete para ese lenguaje escrito en ese lenguaje base";
                 }
 
                 interpretes.put(String.format("%s en %s", lenguaje, base), new Interprete(base, lenguaje));
                 
-                System.out.println(String.format("Se definio un interprete '%s', escrito en '%s'", lenguaje, base));
-                break;
+                return String.format("Se definio un interprete para '%s', escrito en '%s'", lenguaje, base);
 
             case "TRADUCTOR":
                 if (accion.length < 5) {
-                    System.out.println("No se especifico el lenguaje base, el lenguaje origen o el lenguaje destino");
-                    System.out.println("USO: DEFINIR TRADUCTOR <lenguaje base> <lenguaje origen> <lenguaje destino>");
-                    return;
+                    return "No se especifico el lenguaje base, el lenguaje origen o el lenguaje destino\nUSO: DEFINIR TRADUCTOR <lenguaje base> <lenguaje origen> <lenguaje destino>";
                 }
 
                 base = accion[2];
@@ -108,18 +96,15 @@ public class Computadora {
                 destino = accion[4];
 
                 if (traductores.containsKey(String.format("%s a %s en %s", origen, destino, base))) {
-                    System.out.println("Ya existe un traductor para ese lenguaje origen y destino, escrito en ese lenguaje base");
-                    return;
+                    return "Ya existe un traductor para ese lenguaje origen y destino, escrito en ese lenguaje base";
                 }
 
                 traductores.put(String.format("%s a %s en %s", origen, destino, base), new Traductor(base, origen, destino));
 
-                System.out.println(String.format("Se definio un traductor '%s' a '%s', escrito en '%s'", origen, destino, base));
-                break;
+                return String.format("Se definio un traductor de '%s' hacia '%s', escrito en '%s'", origen, destino, base);
                 
             default:
-                System.out.println("Tipo no reconocido");
-                break;
+                return "Tipo no reconocido";
         }
     }
 
