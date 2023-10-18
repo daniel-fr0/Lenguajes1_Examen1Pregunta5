@@ -19,7 +19,7 @@ public class DefinirInterpreteTest {
 		String lenguaje = "Python";
 		String[] accion = {"DEFINIR", "INTERPRETE", lenguajeBase, lenguaje};
 
-		assertEquals(computadora.definir(accion), String.format("Se definió un interprete para '%s', escrito en '%s'", lenguaje, lenguajeBase));
+		assertEquals(computadora.definir(accion), String.format("Se definió un intérprete para '%s', escrito en '%s'", lenguaje, lenguajeBase));
 	}
 	
 	@Test
@@ -42,7 +42,7 @@ public class DefinirInterpreteTest {
 		String lenguaje = "Python";
 		String[] accion = {"DEFINIR", "INTERPRETE", lenguajeBase, lenguaje};
 
-		assertEquals(computadora.definir(accion), String.format("Se definió un interprete para '%s', escrito en '%s'", lenguaje, lenguajeBase));
+		assertEquals(computadora.definir(accion), String.format("Se definió un intérprete para '%s', escrito en '%s'", lenguaje, lenguajeBase));
 		assertEquals(computadora.definir(accion), "Ya existe un interprete para ese lenguaje escrito en ese lenguaje base");
 	}
 }

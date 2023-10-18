@@ -58,7 +58,7 @@ public class ComputadoraTest {
 						   "$> EJECUTABLE fibonacci\n" +
 						   "Si, es posible ejecutar el programa 'fibonacci'\n" +
 						   "$> DEFINIR PROGRAMA factorial Java\n" +
-						   "Se definió el programa 'fibonacci', ejecutable en 'Java'\n" +
+						   "Se definió el programa 'factorial', ejecutable en 'Java'\n" +
 						   "$> EJECUTABLE factorial\n" +
 						   "No es posible ejecutar el programa 'factorial'\n" +
 						   "$> DEFINIR INTERPRETE C Java\n" +

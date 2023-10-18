@@ -54,12 +54,10 @@ public class Grafo<T> {
 	// Busca si hay un camino entre dos vertices con DFS
 	public boolean hayCamino(T origen, T destino) {
 		if (!grafo.containsKey(origen)) {
-			System.out.println("El vertice " + origen + " no existe");
 			return false;
 		}
 
 		if (!grafo.containsKey(destino)) {
-			System.out.println("El vertice " + destino + " no existe");
 			return false;
 		}
 

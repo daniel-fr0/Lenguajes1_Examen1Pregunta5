@@ -17,6 +17,8 @@ public class Computadora {
     // Constructor
     public Computadora() {
         lenguajesEjecutables.add("LOCAL");
+        interpretaciones.agregarVertice("LOCAL");
+        traducciones.agregarVertice("LOCAL");
     }
 
     public static void main(String[] args)
@@ -95,9 +97,9 @@ public class Computadora {
                 lenguajesConocidos.add(base.toUpperCase());
 
                 // Se agrega al grafo de interpretaciones
-                if (!interpretaciones.contieneVertice(lenguaje)) interpretaciones.agregarVertice(lenguaje);
-                if (!interpretaciones.contieneVertice(base)) interpretaciones.agregarVertice(base);
-                interpretaciones.agregarArista(lenguaje, base);
+                if (!interpretaciones.contieneVertice(lenguaje)) interpretaciones.agregarVertice(lenguaje.toUpperCase());
+                if (!interpretaciones.contieneVertice(base)) interpretaciones.agregarVertice(base.toUpperCase());
+                interpretaciones.agregarArista(lenguaje.toUpperCase(), base.toUpperCase());
 
                 // Cada vez que se agrega un interprete se actualiza la lista de lenguajes ejecutables
                 if (lenguajesEjecutables.contains(base.toUpperCase())) {
@@ -105,7 +107,7 @@ public class Computadora {
                 }
                 actualizarEjecutables();
                 
-                return String.format("Se definió un interprete para '%s', escrito en '%s'", lenguaje, base);
+                return String.format("Se definió un intérprete para '%s', escrito en '%s'", lenguaje, base);
 
             case "TRADUCTOR":
                 if (accion.length < 5) {
@@ -126,9 +128,9 @@ public class Computadora {
                 lenguajesConocidos.add(destino.toUpperCase());
 
                 // Se agrega al grafo de traducciones
-                if (!traducciones.contieneVertice(origen)) traducciones.agregarVertice(origen);
-                if (!traducciones.contieneVertice(destino)) traducciones.agregarVertice(destino);
-                traducciones.agregarArista(origen, destino, base);
+                if (!traducciones.contieneVertice(origen)) traducciones.agregarVertice(origen.toUpperCase());
+                if (!traducciones.contieneVertice(destino)) traducciones.agregarVertice(destino.toUpperCase());
+                traducciones.agregarArista(origen.toUpperCase(), destino.toUpperCase(), base.toUpperCase());
 
                 // Cada vez que se agrega un traductor se actualiza la lista de lenguajes ejecutables
                 if (lenguajesEjecutables.contains(base.toUpperCase()) && lenguajesEjecutables.contains(destino.toUpperCase())) {
@@ -182,9 +184,11 @@ public class Computadora {
     }
 
     private boolean traducible(String lenguaje) {
-        for (String ejecutable: lenguajesEjecutables) {
+        for (String ejecutable: lenguajesConocidos) {
+            if (ejecutable.equals(lenguaje)) continue;
+            if (!interpretable(ejecutable)) continue;
             // Se verifica si es ejecutable, o si hay un camino entre el lenguaje y el ejecutable que pase por un traductor
-            if (lenguaje.equals(ejecutable) || hayTraducciones(lenguaje, ejecutable)) {
+            if (hayTraducciones(lenguaje, ejecutable)) {
                 lenguajesEjecutables.add(lenguaje);
                 return true;
             }
