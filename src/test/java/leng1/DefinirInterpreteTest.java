@@ -19,21 +19,21 @@ public class DefinirInterpreteTest {
 		String lenguaje = "Python";
 		String[] accion = {"DEFINIR", "INTERPRETE", lenguajeBase, lenguaje};
 
-		assertEquals(computadora.definir(accion), String.format("Se definio un interprete para '%s', escrito en '%s'", lenguaje, lenguajeBase));
+		assertEquals(computadora.definir(accion), String.format("Se definió un interprete para '%s', escrito en '%s'", lenguaje, lenguajeBase));
 	}
 	
 	@Test
 	public void testDefinirInterpreteSinLenguajeBase() {
 		String[] accion = {"DEFINIR", "INTERPRETE"};
 
-		assertEquals(computadora.definir(accion), "No se especifico el lenguaje base o el lenguaje\nUSO: DEFINIR INTERPRETE <lenguaje base> <lenguaje>");
+		assertEquals(computadora.definir(accion), "No se especificó el lenguaje base o el lenguaje\nUSO: DEFINIR INTERPRETE <lenguaje base> <lenguaje>");
 	}
 
 	@Test
 	public void testDefinirInterpreteSinLenguaje() {
 		String[] accion = {"DEFINIR", "INTERPRETE", "C"};
 
-		assertEquals(computadora.definir(accion), "No se especifico el lenguaje base o el lenguaje\nUSO: DEFINIR INTERPRETE <lenguaje base> <lenguaje>");
+		assertEquals(computadora.definir(accion), "No se especificó el lenguaje base o el lenguaje\nUSO: DEFINIR INTERPRETE <lenguaje base> <lenguaje>");
 	}
 
 	@Test
@@ -42,7 +42,7 @@ public class DefinirInterpreteTest {
 		String lenguaje = "Python";
 		String[] accion = {"DEFINIR", "INTERPRETE", lenguajeBase, lenguaje};
 
-		assertEquals(computadora.definir(accion), String.format("Se definio un interprete para '%s', escrito en '%s'", lenguaje, lenguajeBase));
+		assertEquals(computadora.definir(accion), String.format("Se definió un interprete para '%s', escrito en '%s'", lenguaje, lenguajeBase));
 		assertEquals(computadora.definir(accion), "Ya existe un interprete para ese lenguaje escrito en ese lenguaje base");
 	}
 }

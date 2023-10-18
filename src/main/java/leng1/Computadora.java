@@ -1,11 +1,20 @@
 package leng1;
 
 import java.util.HashMap;
+import java.util.HashSet;
+
 
 public class Computadora {
+    // Atributos
     private HashMap<String, Programa> programas = new HashMap<String, Programa>();
     private HashMap<String, Interprete> interpretes = new HashMap<String, Interprete>();
     private HashMap<String, Traductor> traductores = new HashMap<String, Traductor>();
+    private HashSet<String> lenguajesEjecutables = new HashSet<String>();
+
+    // Constructor
+    public Computadora() {
+        lenguajesEjecutables.add("LOCAL");
+    }
 
     public static void main(String[] args)
     {
@@ -17,7 +26,9 @@ public class Computadora {
         while (true) {
             System.out.println("\n");
             String[] accion = pedirAccion();
+            System.out.println("\n");
             if (accion == null) {
+                System.out.println("No se especificó ninguna accion");
                 continue;
             }
 
@@ -26,20 +37,13 @@ public class Computadora {
 
             switch(comando) {
                 case "DEFINIR":
-                    definir(accion);
+                    System.out.println(definir(accion));
                     break;
                 case "EJECUTABLE":
-                    if (accion.length < 2) {
-                        System.out.println("No se especifico el nombre del programa");
-                        continue;
-                    }
-
-                    ejecutable(accion);
+                    System.out.println(ejecutable(accion));
                     break;
-
                 case "SALIR":
                     return;
-                
                 default:
                     System.out.println("Comando no reconocido");
                     break;
@@ -48,7 +52,7 @@ public class Computadora {
     }
 
     public String definir(String[] accion) {
-        if (accion.length < 2) return "No se especifico el tipo a definir";
+        if (accion.length < 2) return "No se especificó el tipo a definir";
 
         String tipo = accion[1].toUpperCase();
         String nombre, lenguaje, base, origen, destino;
@@ -56,7 +60,7 @@ public class Computadora {
         switch(tipo) {
             case "PROGRAMA":
                 if (accion.length < 4) {
-                    return "No se especifico el nombre del programa o el lenguaje\nUSO: DEFINIR PROGRAMA <nombre> <lenguaje>";
+                    return "No se especificó el nombre del programa o el lenguaje\nUSO: DEFINIR PROGRAMA <nombre> <lenguaje>";
                 }
 
                 nombre = accion[2];
@@ -68,11 +72,11 @@ public class Computadora {
 
                 programas.put(nombre, new Programa(nombre, lenguaje));
 
-                return String.format("Se definio el programa '%s', ejecutable en '%s'", nombre, lenguaje);
+                return String.format("Se definió el programa '%s', ejecutable en '%s'", nombre, lenguaje);
 
             case "INTERPRETE":
                 if (accion.length < 4) {
-                    return "No se especifico el lenguaje base o el lenguaje\nUSO: DEFINIR INTERPRETE <lenguaje base> <lenguaje>";
+                    return "No se especificó el lenguaje base o el lenguaje\nUSO: DEFINIR INTERPRETE <lenguaje base> <lenguaje>";
                 }
 
                 base = accion[2];
@@ -83,12 +87,18 @@ public class Computadora {
                 }
 
                 interpretes.put(String.format("%s en %s", lenguaje, base), new Interprete(base, lenguaje));
+
+                // Cada vez que se agrega un interprete se actualiza la lista de lenguajes ejecutables
+                if (lenguajesEjecutables.contains(base.toUpperCase())) {
+                    lenguajesEjecutables.add(lenguaje.toUpperCase());
+                }
+                actualizarEjecutables();
                 
-                return String.format("Se definio un interprete para '%s', escrito en '%s'", lenguaje, base);
+                return String.format("Se definió un interprete para '%s', escrito en '%s'", lenguaje, base);
 
             case "TRADUCTOR":
                 if (accion.length < 5) {
-                    return "No se especifico el lenguaje base, el lenguaje origen o el lenguaje destino\nUSO: DEFINIR TRADUCTOR <lenguaje base> <lenguaje origen> <lenguaje destino>";
+                    return "No se especificó el lenguaje base, el lenguaje origen o el lenguaje destino\nUSO: DEFINIR TRADUCTOR <lenguaje base> <lenguaje origen> <lenguaje destino>";
                 }
 
                 base = accion[2];
@@ -101,29 +111,57 @@ public class Computadora {
 
                 traductores.put(String.format("%s a %s en %s", origen, destino, base), new Traductor(base, origen, destino));
 
-                return String.format("Se definio un traductor de '%s' hacia '%s', escrito en '%s'", origen, destino, base);
+                // Cada vez que se agrega un traductor se actualiza la lista de lenguajes ejecutables
+                if (lenguajesEjecutables.contains(base.toUpperCase()) && lenguajesEjecutables.contains(destino.toUpperCase())) {
+                    lenguajesEjecutables.add(origen.toUpperCase());
+                }
+                actualizarEjecutables();
+
+                return String.format("Se definió un traductor de '%s' hacia '%s', escrito en '%s'", origen, destino, base);
                 
             default:
                 return "Tipo no reconocido";
         }
     }
 
-    public void ejecutable(String[] accion) {
+    public String ejecutable(String[] accion) {
         if (accion.length < 2) {
-            System.out.println("No se especifico el nombre del programa");
-            return;
+            return "No se especificó el nombre del programa";
         }
 
         String nombre = accion[1];
 
         if (!programas.containsKey(nombre)) {
-            System.out.println("No existe un programa con ese nombre");
-            return;
+            return "No existe un programa con ese nombre";
         }
 
-        System.out.println("IMPLEMENTAR");
-        // QUIZAS esto sea util
-        // Programa programa = programas.get(nombre);
+        String lenguaje = programas.get(nombre).getLenguaje().toUpperCase();
+
+        if (lenguajesEjecutables.contains(lenguaje)) {
+            return String.format("Si, es posible ejecutar el programa '%s'", nombre);
+        }
+        return String.format("No es posible ejecutar el programa '%s'", nombre);
+    }
+
+    public void actualizarEjecutables() {
+        for (Interprete interprete : interpretes.values()) {
+            // Se agregan todos los lenguajes que se puedan ejecutar con interpretes
+            if (lenguajesEjecutables.contains(interprete.getLenguajeBase().toUpperCase())) {
+                lenguajesEjecutables.add(interprete.getLenguaje().toUpperCase());
+            }
+        }
+
+        // Se agregan todos los lenguajes que se puedan traducir a lenguajes ejecutables
+        for (Traductor traductor : traductores.values()) {
+            // Si no se puede ejecutar el traductor o el lenguaje destino, se ignora
+            if (!lenguajesEjecutables.contains(traductor.getLenguajeBase().toUpperCase()) 
+            || !lenguajesEjecutables.contains(traductor.getLenguajeDestino().toUpperCase())) continue;
+
+            // Se agregan todos los lenguajes que se puedan traducir a lenguajes ejecutables
+            if (lenguajesEjecutables.contains(traductor.getLenguajeDestino().toUpperCase())) {
+                lenguajesEjecutables.add(traductor.getLenguajeOrigen().toUpperCase());
+            }
+        }
     }
 
     public String[] pedirAccion() {
@@ -136,11 +174,9 @@ public class Computadora {
         String accion = System.console().readLine();
 
         if (accion.length() == 0) {
-            System.out.println("No se especifico ninguna accion");
             return null;
         }
 
-        System.out.println("\n");
         return accion.split(" ");
     }
 }

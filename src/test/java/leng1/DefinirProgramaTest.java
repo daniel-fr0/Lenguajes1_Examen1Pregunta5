@@ -17,7 +17,7 @@ public class DefinirProgramaTest {
     public void testDefinirSinTipo() {
         String[] accion = {"DEFINIR", };
 
-        assertEquals(computadora.definir(accion), "No se especifico el tipo a definir");
+        assertEquals(computadora.definir(accion), "No se especificó el tipo a definir");
     }
 
     @Test
@@ -26,21 +26,21 @@ public class DefinirProgramaTest {
         String lenguaje = "C";
         String[] accion = {"DEFINIR", "PROGRAMA", nombre, lenguaje};
 
-        assertEquals(computadora.definir(accion), String.format("Se definio el programa '%s', ejecutable en '%s'", nombre, lenguaje));
+        assertEquals(computadora.definir(accion), String.format("Se definió el programa '%s', ejecutable en '%s'", nombre, lenguaje));
     }
 
     @Test
     public void testDefinirProgramaSinNombre() {
         String[] accion = {"DEFINIR", "PROGRAMA"};
 
-        assertEquals(computadora.definir(accion), "No se especifico el nombre del programa o el lenguaje\nUSO: DEFINIR PROGRAMA <nombre> <lenguaje>");
+        assertEquals(computadora.definir(accion), "No se especificó el nombre del programa o el lenguaje\nUSO: DEFINIR PROGRAMA <nombre> <lenguaje>");
     }
 
     @Test
     public void testDefinirProgramaSinLenguaje() {
         String[] accion = {"DEFINIR", "PROGRAMA", "fibonacci"};
 
-        assertEquals(computadora.definir(accion), "No se especifico el nombre del programa o el lenguaje\nUSO: DEFINIR PROGRAMA <nombre> <lenguaje>");
+        assertEquals(computadora.definir(accion), "No se especificó el nombre del programa o el lenguaje\nUSO: DEFINIR PROGRAMA <nombre> <lenguaje>");
     }
 
     @Test
@@ -49,7 +49,7 @@ public class DefinirProgramaTest {
         String lenguaje = "C";
         String[] accion = {"DEFINIR", "PROGRAMA", nombre, lenguaje};
 
-        assertEquals(computadora.definir(accion), String.format("Se definio el programa '%s', ejecutable en '%s'", nombre, lenguaje));
+        assertEquals(computadora.definir(accion), String.format("Se definió el programa '%s', ejecutable en '%s'", nombre, lenguaje));
         assertEquals(computadora.definir(accion), "Ya existe un programa con ese nombre");
     }
 }
