@@ -34,7 +34,7 @@ public class Grafo<T> {
 			return;
 		}
 
-		grafo.get(origen).add(new Arista<T>(destino, null));
+		grafo.get(origen).add(new Arista<T>(destino));
 	}
 
 	public void agregarArista(T origen, T destino, String peso) {
