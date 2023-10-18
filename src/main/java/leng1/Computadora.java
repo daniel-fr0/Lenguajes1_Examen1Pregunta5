@@ -9,7 +9,10 @@ public class Computadora {
     private HashMap<String, Programa> programas = new HashMap<String, Programa>();
     private HashMap<String, Interprete> interpretes = new HashMap<String, Interprete>();
     private HashMap<String, Traductor> traductores = new HashMap<String, Traductor>();
+    private HashSet<String> lenguajesConocidos = new HashSet<String>();
     private HashSet<String> lenguajesEjecutables = new HashSet<String>();
+    private Grafo<String> traducciones = new Grafo<String>();
+    private Grafo<String> interpretaciones = new Grafo<String>();
 
     // Constructor
     public Computadora() {
@@ -71,6 +74,7 @@ public class Computadora {
                 }
 
                 programas.put(nombre, new Programa(nombre, lenguaje));
+                lenguajesConocidos.add(lenguaje.toUpperCase());
 
                 return String.format("Se definió el programa '%s', ejecutable en '%s'", nombre, lenguaje);
 
@@ -87,12 +91,19 @@ public class Computadora {
                 }
 
                 interpretes.put(String.format("%s en %s", lenguaje, base), new Interprete(base, lenguaje));
+                lenguajesConocidos.add(lenguaje.toUpperCase());
+                lenguajesConocidos.add(base.toUpperCase());
+
+                // Se agrega al grafo de interpretaciones
+                if (!interpretaciones.contieneVertice(lenguaje)) interpretaciones.agregarVertice(lenguaje);
+                if (!interpretaciones.contieneVertice(base)) interpretaciones.agregarVertice(base);
+                interpretaciones.agregarArista(lenguaje, base);
 
                 // Cada vez que se agrega un interprete se actualiza la lista de lenguajes ejecutables
                 if (lenguajesEjecutables.contains(base.toUpperCase())) {
                     lenguajesEjecutables.add(lenguaje.toUpperCase());
                 }
-                while (actualizarEjecutables());
+                actualizarEjecutables();
                 
                 return String.format("Se definió un interprete para '%s', escrito en '%s'", lenguaje, base);
 
@@ -110,12 +121,20 @@ public class Computadora {
                 }
 
                 traductores.put(String.format("%s a %s en %s", origen, destino, base), new Traductor(base, origen, destino));
+                lenguajesConocidos.add(base.toUpperCase());
+                lenguajesConocidos.add(origen.toUpperCase());
+                lenguajesConocidos.add(destino.toUpperCase());
+
+                // Se agrega al grafo de traducciones
+                if (!traducciones.contieneVertice(origen)) traducciones.agregarVertice(origen);
+                if (!traducciones.contieneVertice(destino)) traducciones.agregarVertice(destino);
+                traducciones.agregarArista(origen, destino, base);
 
                 // Cada vez que se agrega un traductor se actualiza la lista de lenguajes ejecutables
                 if (lenguajesEjecutables.contains(base.toUpperCase()) && lenguajesEjecutables.contains(destino.toUpperCase())) {
                     lenguajesEjecutables.add(origen.toUpperCase());
                 }
-                while (actualizarEjecutables());
+                actualizarEjecutables();
 
                 return String.format("Se definió un traductor de '%s' hacia '%s', escrito en '%s'", origen, destino, base);
                 
@@ -137,33 +156,63 @@ public class Computadora {
 
         String lenguaje = programas.get(nombre).getLenguaje().toUpperCase();
 
-        if (lenguajesEjecutables.contains(lenguaje)) {
+        if (interpretable(lenguaje) || traducible(lenguaje)) {
             return String.format("Si, es posible ejecutar el programa '%s'", nombre);
         }
         return String.format("No es posible ejecutar el programa '%s'", nombre);
     }
 
-    public boolean actualizarEjecutables() {
-        int numLenguajesInicial = lenguajesEjecutables.size();
-        for (Interprete interprete : interpretes.values()) {
-            // Se agregan todos los lenguajes que se puedan ejecutar con interpretes
-            if (lenguajesEjecutables.contains(interprete.getLenguajeBase().toUpperCase())) {
-                lenguajesEjecutables.add(interprete.getLenguaje().toUpperCase());
+    public void actualizarEjecutables() {
+        for (String lenguaje: lenguajesConocidos) {
+            if (lenguajesEjecutables.contains(lenguaje)) continue;
+            if (interpretable(lenguaje) || traducible(lenguaje)) {
+                lenguajesEjecutables.add(lenguaje);
             }
         }
+    }
 
-        // Se agregan todos los lenguajes que se puedan traducir a lenguajes ejecutables
-        for (Traductor traductor : traductores.values()) {
-            // Si no se puede ejecutar el traductor o el lenguaje destino, se ignora
-            if (!lenguajesEjecutables.contains(traductor.getLenguajeBase().toUpperCase()) 
-            || !lenguajesEjecutables.contains(traductor.getLenguajeDestino().toUpperCase())) continue;
-
-            // Se agregan todos los lenguajes que se puedan traducir a lenguajes ejecutables
-            if (lenguajesEjecutables.contains(traductor.getLenguajeDestino().toUpperCase())) {
-                lenguajesEjecutables.add(traductor.getLenguajeOrigen().toUpperCase());
+    private boolean interpretable(String lenguaje) {
+        for (String ejecutable: lenguajesEjecutables) {
+            if (lenguaje.equals(ejecutable) || interpretaciones.hayCamino(lenguaje, ejecutable)) {
+                lenguajesEjecutables.add(lenguaje);
+                return true;
             }
         }
-        return lenguajesEjecutables.size() > numLenguajesInicial;
+        return false;
+    }
+
+    private boolean traducible(String lenguaje) {
+        for (String ejecutable: lenguajesEjecutables) {
+            // Se verifica si es ejecutable, o si hay un camino entre el lenguaje y el ejecutable que pase por un traductor
+            if (lenguaje.equals(ejecutable) || hayTraducciones(lenguaje, ejecutable)) {
+                lenguajesEjecutables.add(lenguaje);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean hayTraducciones(String origen, String destino) {
+        if (!traducciones.contieneVertice(origen) || !traducciones.contieneVertice(destino)) {
+            return false;
+        }
+
+        HashSet<String> visitados = new HashSet<String>();
+        return hayTraducciones(origen, destino, visitados);
+    }
+
+    private boolean hayTraducciones(String origen, String destino, HashSet<String> visitados) {
+        if (origen.equals(destino)) return true;
+
+        visitados.add(origen);
+
+        for (Arista<String> arista: traducciones.getAristas(origen)) {
+            String vertice = arista.getDestino();
+            if (visitados.contains(vertice)) continue;
+            if (!interpretable(arista.getPeso()) && !traducible(arista.getPeso())) continue;
+            if (interpretable(vertice) || hayTraducciones(vertice, destino, visitados)) return true;
+        }
+        return false;
     }
 
     public String[] pedirAccion() {
