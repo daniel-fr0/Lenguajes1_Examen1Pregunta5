@@ -92,7 +92,7 @@ public class Computadora {
                 if (lenguajesEjecutables.contains(base.toUpperCase())) {
                     lenguajesEjecutables.add(lenguaje.toUpperCase());
                 }
-                actualizarEjecutables();
+                while (actualizarEjecutables());
                 
                 return String.format("Se definió un interprete para '%s', escrito en '%s'", lenguaje, base);
 
@@ -115,7 +115,7 @@ public class Computadora {
                 if (lenguajesEjecutables.contains(base.toUpperCase()) && lenguajesEjecutables.contains(destino.toUpperCase())) {
                     lenguajesEjecutables.add(origen.toUpperCase());
                 }
-                actualizarEjecutables();
+                while (actualizarEjecutables());
 
                 return String.format("Se definió un traductor de '%s' hacia '%s', escrito en '%s'", origen, destino, base);
                 
@@ -143,7 +143,8 @@ public class Computadora {
         return String.format("No es posible ejecutar el programa '%s'", nombre);
     }
 
-    public void actualizarEjecutables() {
+    public boolean actualizarEjecutables() {
+        int numLenguajesInicial = lenguajesEjecutables.size();
         for (Interprete interprete : interpretes.values()) {
             // Se agregan todos los lenguajes que se puedan ejecutar con interpretes
             if (lenguajesEjecutables.contains(interprete.getLenguajeBase().toUpperCase())) {
@@ -162,6 +163,7 @@ public class Computadora {
                 lenguajesEjecutables.add(traductor.getLenguajeOrigen().toUpperCase());
             }
         }
+        return lenguajesEjecutables.size() > numLenguajesInicial;
     }
 
     public String[] pedirAccion() {

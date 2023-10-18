@@ -101,4 +101,22 @@ public class ComputadoraTest {
 			}
 		}
 	}
+
+	@Test
+	public void testCadena() {
+		computadora.definir(new String[] {"DEFINIR", "INTERPRETE", "B", "A"});
+		computadora.definir(new String[] {"DEFINIR", "INTERPRETE", "C", "B"});
+		computadora.definir(new String[] {"DEFINIR", "INTERPRETE", "LOCAL", "C"});
+		computadora.definir(new String[] {"DEFINIR", "PROGRAMA", "cadenaInterpretable", "A"});
+		String resultado = computadora.ejecutable(new String[] {"EJECUTABLE", "cadenaInterpretable"});
+		assertEquals(resultado, "Si, es posible ejecutar el programa 'cadenaInterpretable'");
+
+		computadora.definir(new String[] {"DEFINIR", "TRADUCTOR", "X", "W", "Z"});
+		computadora.definir(new String[] {"DEFINIR", "TRADUCTOR", "Y", "X", "Y"});
+		computadora.definir(new String[] {"DEFINIR", "TRADUCTOR", "Z", "Y", "Z"});
+		computadora.definir(new String[] {"DEFINIR", "TRADUCTOR", "B", "Z", "C"});
+		computadora.definir(new String[] {"DEFINIR", "PROGRAMA", "cadenaTraducible", "W"});
+		resultado = computadora.ejecutable(new String[] {"EJECUTABLE", "cadenaTraducible"});
+		assertEquals(resultado, "Si, es posible ejecutar el programa 'cadenaTraducible'");
+	}
 }
